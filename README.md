@@ -1,8 +1,6 @@
 # Kafkalogue
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/kafkalogue`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+A buffered log backed by [Apache Kafka](http://kafka.apache.org/). Kafkalogue is resilient to intermittent connectivity issues, as it buffers messages in memory.
 
 ## Installation
 
@@ -22,7 +20,24 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require 'kafkalogue'
+
+# You need a list of Kafka brokers.
+brokers = ["kafka1:9092", "kafka2:9092"]
+
+# The Kafka topic that the log should be written to.
+topic = "my-app.log"
+
+log = Kafkalogue.new(brokers: brokers, topic: topic)
+
+# Writes are buffered in memory; each entry must be accompanied by a key.
+log.write("some data", key: "some-key")
+log.write("any string works", key: "some-key")
+
+# Calling flush will cause Kafkalogue to write the entries to the Kafka topic.
+log.flush
+```
 
 ## Development
 
@@ -32,7 +47,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/kafkalogue. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/dasch/kafkalogue. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
 
 
 ## License
