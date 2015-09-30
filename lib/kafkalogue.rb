@@ -1,5 +1,9 @@
 require "kafkalogue/version"
 
 module Kafkalogue
-  # Your code goes here...
+  def self.new(*args)
+    Log.new(*args)
+  end
 end
+
+require 'kafkalogue/log'
