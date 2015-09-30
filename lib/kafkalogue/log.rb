@@ -23,20 +23,22 @@ module Kafkalogue
     end
 
     def flush
-      @producer.send_messages(@buffer)
+      instrument :flush do
+        @producer.send_messages(@buffer)
+      end
+
       @buffer.clear
     rescue Poseidon::Errors::UnableToFetchMetadata, SocketError
       # Couldn't write to Kafka, so let's just buffer the messages for now.
-      instrument :flush_failed
     end
 
     private
 
-    def instrument(event, payload = {})
+    def instrument(event, payload = {}, &block)
       if defined?(ActiveSupport::Notifications)
         key = "#{event}.kafkalogue"
         payload[:topic] = @topic
-        ActiveSupport::Notifications.instrument(key, payload)
+        ActiveSupport::Notifications.instrument(key, payload, &block)
       end
     end
   end

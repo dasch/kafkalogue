@@ -16,6 +16,14 @@ describe Kafkalogue do
     log.flush
   end
 
+  it "instruments flushes" do
+    log.write("some data", key: "yolo")
+    log.flush
+
+    expect(events.size).to eq 1
+    expect(events.first.name).to eq "flush.kafkalogue"
+  end
+
   it "instruments buffer overflows" do
     Kafkalogue::MAX_BUFFER_SIZE.times do
       log.write("yolo", key: "xoxo")
@@ -37,6 +45,7 @@ describe Kafkalogue do
     log.flush
 
     expect(events.size).to eq 1
-    expect(events.first.name).to eq "flush_failed.kafkalogue"
+    expect(events.first.name).to eq "flush.kafkalogue"
+    expect(events.first.payload.fetch(:exception)).not_to be_nil
   end
 end
