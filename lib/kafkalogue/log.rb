@@ -25,6 +25,9 @@ module Kafkalogue
     def flush
       @producer.send_messages(@buffer)
       @buffer.clear
+    rescue Poseidon::Errors::UnableToFetchMetadata, SocketError
+      # Couldn't write to Kafka, so let's just buffer the messages for now.
+      instrument :flush_failed
     end
 
     private
